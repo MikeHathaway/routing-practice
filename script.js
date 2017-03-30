@@ -6,20 +6,18 @@ const members = require('./member_data.js')
 const allMembers = (req,res) => res.send(members)
 const allHouses = (req,res) => res.send(houses)
 
-const specificMembers = (req,res) => {
+const specificMembers = (req,res,next) => {
   const index = req.params.index
-  res.send(members[index])
+  const error = {status: 404, message: 'ya done fucked up'}
+  members[index] ? res.send(members[index]) : next(error)
 }
 
 const specificHouses = (req,res,next) => {
   const index = req.params.index
   const error = {status: 404, message: 'ya done fucked up'}
-
-  if(houses[index]){
-    res.send(houses[index])
+  houses[index] ? res.send(houses[index]) : next(error)
   }
-  next(error)
-}
+
 
 const errorHandler = (err,req,res,next) => {
   console.log('we in the errors yo',err)
@@ -30,14 +28,11 @@ app.get('/',(req,res) => {
   res.send('please select /houses or /members')
 })
 
+
 app.get('/members',allMembers)
-
 app.get('/houses',allHouses)
-
 app.get('/members/:index',specificMembers)
-
 app.get('/houses/:index',specificHouses)
-
 app.use(errorHandler)
 
 
